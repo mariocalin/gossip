@@ -1,0 +1,44 @@
+# Nodejs
+**/node_modules/
+
+# Angular
+/app/dist/
+/app/e2e/*.log
+/app/e2e/*.screenshots
+/app/e2e/reports/
+/app/*.png
+/app/*.jpg
+/app/node_modules/
+
+# Express.js
+/api/build/
+/api/node_modules/
+
+# TypeScript
+*.tsbuildinfo
+
+# Visual Studio Code
+.vscode/
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+
+# Log files
+*.log
+
+# Mac OS
+.DS_Store
+
+# npm
+npm-debug.log
+*.log
+
+# Yarn
+yarn-error.log
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
