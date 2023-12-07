@@ -7,11 +7,14 @@
     "module": "node16",
     "target": "es2022",
     "outDir": "dist",
-    "rootDir" :"src",
+    "rootDir": "src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node16"
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
   }
 }
