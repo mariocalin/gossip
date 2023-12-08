@@ -1,3 +1,11 @@
-# Gossip
+#  Gossip
 
-To complete
+# Structure
+
+## API
+
+Web API developed with Typescript and Express JS
+
+## App
+
+Angular App
