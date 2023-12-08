@@ -3,15 +3,42 @@
     "browser": true,
     "es2021": true
   },
-  "extends": "standard-with-typescript",
+  "extends": ["standard-with-typescript", "prettier"],
   "overrides": [
+    {
+      "files": ["**/*.js"],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off"
+      }
+    },
     {
       "env": {
         "node": true
       },
-      "files": [".eslintrc.{js,cjs}"],
+      "files": "**/*.ts",
+      "parser": "@typescript-eslint/parser",
       "parserOptions": {
-        "sourceType": "script"
+        "sourceType": "module" // This is for TypeScript files
+      },
+      "rules": {
+        "@typescript-eslint/semi": ["error", "always"],
+        "@typescript-eslint/space-before-function-paren": [
+          "error",
+          { "anonymous": "always", "named": "never" }
+        ],
+        "@typescript-eslint/member-delimiter-style": [
+          "error",
+          {
+            "multiline": {
+              "delimiter": "semi", // 'none' or 'semi' or 'comma'
+              "requireLast": true
+            },
+            "singleline": {
+              "delimiter": "semi", // 'semi' or 'comma'
+              "requireLast": false
+            }
+          }
+        ]
       }
     }
   ],
@@ -22,11 +49,6 @@
   "rules": {
     "eqeqeq": "error",
     "semi": ["off", "never"],
-    "indent": ["warn", 2],
-    "@typescript-eslint/semi": ["error", "always"],
-    "@typescript-eslint/space-before-function-paren": [
-      "error",
-      { "anonymous": "always", "named": "never" }
-    ]
+    "indent": ["warn", 2]
   }
 }

@@ -1,6 +1,10 @@
 # Nodejs
 **/node_modules/
 
+# Api
+/api/dist/**
+
+
 # Angular
 /app/dist/
 /app/e2e/*.log
