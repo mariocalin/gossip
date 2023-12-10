@@ -30,16 +30,10 @@ export class UserController {
 
     const name = req.body.name as string;
 
-    const createUserResult = await this.userService.createUser(name);
-
-    if (createUserResult instanceof Error) {
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: createUserResult.message });
-    }
+    const user = await this.userService.createUser(name);
 
     return res
       .status(StatusCodes.CREATED)
-      .json({ ...createUserResult, creationDate: new Date() });
+      .json({ ...user, creationDate: new Date() });
   }
 }

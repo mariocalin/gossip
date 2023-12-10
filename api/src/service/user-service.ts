@@ -1,7 +1,6 @@
 import { provideId } from '../model/id';
 import { type UserRepository, type User } from '../model/user';
 import { isNullOrUndefined } from '../utils';
-import Logger from 'jet-logger';
 
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
@@ -16,11 +15,7 @@ export class UserService {
       throw new Error('User already exists');
     }
 
-    try {
-      await this.userRepository.save(user);
-    } catch (err) {
-      Logger.err(err, true);
-    }
+    await this.userRepository.save(user);
 
     return user;
   }
