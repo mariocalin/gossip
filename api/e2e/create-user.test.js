@@ -20,4 +20,17 @@ describe('Create a user', () => {
         failTest(err);
       });
   });
+
+  it('should return status 400 bad request for a POST request ', async () => {
+    await request(e2eConfiguration.baseUrl)
+      .post('/user/')
+      .send()
+      .expect(400)
+      .then((response) => {
+        expect(response.body.name).toBeDefined();
+      })
+      .catch((err) => {
+        failTest(err);
+      });
+  });
 });
