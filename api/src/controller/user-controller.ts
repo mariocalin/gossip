@@ -11,12 +11,8 @@ export class UserController {
 
   @Get()
   async allUsers(req: Request, res: Response): Promise<Response> {
-    try {
-      const users = await this.userService.getAllUsers();
-      return res.status(StatusCodes.OK).json(users);
-    } catch (err) {
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR);
-    }
+    const users = await this.userService.getAllUsers();
+    return res.status(StatusCodes.OK).json(users);
   }
 
   @Post()

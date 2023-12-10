@@ -1,4 +1,5 @@
 import { type NextFunction, type Request, type Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import Logger from 'jet-logger';
 
 function errorHandler(
@@ -14,7 +15,9 @@ function errorHandler(
     return;
   }
 
-  res.status(500).send({ errors: [{ message: 'Something went wrong' }] });
+  res
+    .status(StatusCodes.INTERNAL_SERVER_ERROR)
+    .send({ errors: [{ message: 'Something went wrong' }] });
 }
 
 export default errorHandler;
