@@ -3,6 +3,7 @@
 
 # Api
 /api/dist/**
+/api/coverage/**
 
 
 # Angular

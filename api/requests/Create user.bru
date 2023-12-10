@@ -1,0 +1,21 @@
+meta {
+  name: Create user
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/user/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Super"
+  }
+}
+
+body:multipart-form {
+  name: Super user
+}
