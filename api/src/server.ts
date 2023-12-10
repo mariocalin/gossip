@@ -1,8 +1,6 @@
 import { Server } from '@overnightjs/core';
 import * as bodyParser from 'body-parser';
 import Logger from 'jet-logger';
-import { type AppContext } from './context';
-import { UserController } from './controller/user-controller';
 import errorHandler from './middleware/error-handler';
 import 'express-async-errors';
 import requestLogger from './middleware/request-logger';
@@ -18,9 +16,8 @@ export class Api extends Server {
     this.app.use(requestLogger);
   }
 
-  public async loadContext(context: AppContext): Promise<void> {
-    const userController = new UserController(context.service.userService);
-    this.addControllers(userController);
+  public async loadControllers(controllers: any[]): Promise<void> {
+    this.addControllers(controllers);
   }
 
   public start(onStart: () => void): void {

@@ -13,10 +13,10 @@ import { uniqueId } from 'lodash';
 
 describe('UserService test', () => {
   const mockedRepository: UserRepository = mock<UserRepository>();
-  let userService: UserService;
+  let sut: UserService;
 
-  beforeEach(() => {
-    userService = new UserService(instance(mockedRepository));
+  beforeAll(() => {
+    sut = new UserService(instance(mockedRepository));
   });
 
   afterEach(() => {
@@ -29,7 +29,7 @@ describe('UserService test', () => {
     when(mockedRepository.findByName(name)).thenResolve(null);
 
     // When
-    const user = await userService.createUser(name);
+    const user = await sut.createUser(name);
 
     // Then
     expect(user.name).toEqual(name);
@@ -44,7 +44,7 @@ describe('UserService test', () => {
 
     // When
     try {
-      await userService.createUser(name);
+      await sut.createUser(name);
     } catch (err) {
       expect(err).toBeDefined();
     }
@@ -60,7 +60,7 @@ describe('UserService test', () => {
     when(mockedRepository.findAll()).thenResolve(existingUsers);
 
     // When
-    const users = await userService.getAllUsers();
+    const users = await sut.getAllUsers();
 
     // Then
     expect(users).toEqual(existingUsers);
