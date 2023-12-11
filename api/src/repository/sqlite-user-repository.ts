@@ -1,14 +1,16 @@
-import db from '../db/dbcontext';
+import { type SQLiteContext } from '../db/sqlite-context';
 import { type Id } from '../model/id';
 import { type UserRepository, type User } from '../model/user';
 import { isNullOrUndefined } from '../utils';
 
 export class SQLiteUserRepository implements UserRepository {
+  constructor(private readonly sqliteContext: SQLiteContext) {}
+
   async find(userId: Id): Promise<User | null> {
     const query = 'SELECT * FROM AppUser WHERE id = ?';
 
     return await new Promise((resolve, reject) => {
-      db.get(query, [userId], (err, row) => {
+      this.sqliteContext.get(query, [userId], (err, row) => {
         if (err != null) {
           reject(err);
         } else {
@@ -22,7 +24,7 @@ export class SQLiteUserRepository implements UserRepository {
     const query = 'SELECT * FROM AppUser WHERE name = ?';
 
     return await new Promise((resolve, reject) => {
-      db.get(query, [name], (err, row) => {
+      this.sqliteContext.get(query, [name], (err, row) => {
         if (err != null) {
           reject(err);
         } else if (isNullOrUndefined(row)) {
@@ -38,7 +40,7 @@ export class SQLiteUserRepository implements UserRepository {
     const query = 'SELECT * FROM AppUser';
 
     return await new Promise((resolve, reject) => {
-      db.all(query, (err, rows) => {
+      this.sqliteContext.all(query, (err, rows) => {
         if (err != null) {
           reject(err);
         } else {
@@ -58,9 +60,9 @@ export class SQLiteUserRepository implements UserRepository {
       const query = 'INSERT INTO AppUser (id, name, picture) VALUES (?, ?, ?)';
       const params = [user.id, user.name, user.picture ?? null];
 
-      const stmt = db.prepare(query);
+      const stmt = this.sqliteContext.prepare(query);
 
-      stmt.run(params, function (err) {
+      stmt.run(params, function (err: null) {
         stmt.finalize();
         if (err != null) {
           reject(err);
