@@ -10,7 +10,7 @@
     "start:ts:dev": "ts-node src/index.ts",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "format": "npx prettier --write",
+    "format": "prettier --write  'src/**/*.ts'",
     "test": "npm-run-all test:unit test:int test:e2e",
     "test:unit": "jest --config jest.config.js --collect-coverage --verbose",
     "test:int": "jest --config jest.config.int.js --collect-coverage --verbose",
