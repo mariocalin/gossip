@@ -4,6 +4,7 @@ import Logger from 'jet-logger';
 import errorHandler from './middleware/error-handler';
 import 'express-async-errors';
 import requestLogger from './middleware/request-logger';
+import { requireAuthorizationHeader } from './middleware/auth';
 
 export class Api extends Server {
   private readonly DEFAULT_PORT = 3000;
@@ -14,6 +15,7 @@ export class Api extends Server {
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(errorHandler);
     this.app.use(requestLogger);
+    this.app.use('/gossip', requireAuthorizationHeader);
   }
 
   public async loadControllers(controllers: any[]): Promise<void> {

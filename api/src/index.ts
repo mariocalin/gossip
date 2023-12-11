@@ -1,4 +1,5 @@
 import { provideContext } from './context';
+import { GossipController } from './controller/gossip-controller';
 import { UserController } from './controller/user-controller';
 import { Api } from './server';
 import Logger from 'jet-logger';
@@ -16,8 +17,9 @@ async function startApplication(): Promise<void> {
     Logger.info('Loading context');
 
     const userController = new UserController(context.service.userService);
+    const gossipController = new GossipController();
 
-    await application.loadControllers([userController]);
+    await application.loadControllers([userController, gossipController]);
     Logger.info('Context loaded');
 
     Logger.info('Application starting');

@@ -2,7 +2,7 @@ const axios = require('axios');
 const { e2eConfiguration } = require('./configuration');
 const { failTest } = require('./utils');
 
-describe('Create a user with', () => {
+describe('Create a user', () => {
   it('POST /user/ should return status 201 created for a request to create a user with a name', async () => {
     const name = 'Create-user-test';
     try {

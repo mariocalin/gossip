@@ -3,7 +3,7 @@ const { e2eConfiguration } = require('./configuration');
 const { failTest } = require('./utils');
 const _ = require('lodash');
 
-describe('Create a user', () => {
+describe('Get all users', () => {
   const names = ['get-all-users-1', 'get-all-users-2', 'get-all-users-3'];
 
   beforeEach(async () => {

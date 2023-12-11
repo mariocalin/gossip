@@ -95,4 +95,54 @@ describe('User controller', () => {
 
     verify(mockedService.createUser(anything())).never();
   });
+
+  it('should return bad request when calling createUser with no string in name', async () => {
+    // Ejecutar el método del controlador que estás probando
+    await request(api.app)
+      .post('/user/')
+      .send({
+        name: 25
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.name).toBeDefined();
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
+
+    verify(mockedService.createUser(anything())).never();
+  });
+
+  it('should return bad request when calling createUser with no string in name', async () => {
+    // Ejecutar el método del controlador que estás probando
+    await request(api.app)
+      .post('/user/')
+      .send({
+        name: 25
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.name).toBeDefined();
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
+
+    verify(mockedService.createUser(anything())).never();
+  });
+
+  it('should return internal error when calling createUser produces error', async () => {
+    when(mockedService.createUser(anything())).thenReject(new Error('Error'));
+
+    await request(api.app)
+      .post('/user/')
+      .send({
+        name: 'My name'
+      })
+      .expect(500)
+      .catch((err) => {
+        throw new Error(err);
+      });
+  });
 });
