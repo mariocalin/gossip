@@ -69,7 +69,7 @@ describe('UserService test', () => {
 
 function someUser(name: string): User {
   return {
-    id: { id: provideId() },
+    id: provideId(),
     name
   };
 }

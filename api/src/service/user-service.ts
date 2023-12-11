@@ -7,7 +7,7 @@ export class UserService {
 
   async createUser(name: string): Promise<User> {
     const user: User = {
-      id: { id: provideId() },
+      id: provideId(),
       name
     };
 

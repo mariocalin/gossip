@@ -1,18 +1,14 @@
-import { type UserId } from './user';
-
-export interface GossipId {
-  id: number;
-}
+import { type Id } from './id';
 
 export type Trust = 'positive' | 'negative';
 
 export interface Gossip {
-  id: GossipId;
+  id: Id;
   content: string;
-  creator: UserId;
+  creator: Id;
   creationDate: Date;
   trust: Array<{
-    user: UserId;
+    user: Id;
     trust: Trust;
   }>;
 }

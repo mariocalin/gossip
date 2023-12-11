@@ -1,13 +1,14 @@
 import db from '../db/dbcontext';
-import { type UserRepository, type User, type UserId } from '../model/user';
+import { type Id } from '../model/id';
+import { type UserRepository, type User } from '../model/user';
 import { isNullOrUndefined } from '../utils';
 
 export class SQLiteUserRepository implements UserRepository {
-  async find(userId: UserId): Promise<User | null> {
+  async find(userId: Id): Promise<User | null> {
     const query = 'SELECT * FROM AppUser WHERE id = ?';
 
     return await new Promise((resolve, reject) => {
-      db.get(query, [userId.id], (err, row) => {
+      db.get(query, [userId], (err, row) => {
         if (err != null) {
           reject(err);
         } else {
@@ -55,7 +56,7 @@ export class SQLiteUserRepository implements UserRepository {
   async save(user: User): Promise<void> {
     await new Promise<void>((resolve, reject) => {
       const query = 'INSERT INTO AppUser (id, name, picture) VALUES (?, ?, ?)';
-      const params = [user.id.id, user.name, user.picture ?? null];
+      const params = [user.id, user.name, user.picture ?? null];
 
       const stmt = db.prepare(query);
 
@@ -78,7 +79,7 @@ export class SQLiteUserRepository implements UserRepository {
       const name = this.assertStringProperty(typedRow, 'name');
       const picture = this.assertOptionalStringProperty(typedRow, 'picture');
 
-      if (typeof userId.id !== 'number') {
+      if (typeof userId !== 'number') {
         throw new Error('Mapping Error: Incorrect type in the database row.');
       }
 
@@ -88,9 +89,9 @@ export class SQLiteUserRepository implements UserRepository {
     throw new Error('Mapping Error: The database row is not an object.');
   }
 
-  private mapToUserId(id: unknown): UserId {
+  private mapToUserId(id: unknown): Id {
     if (typeof id === 'number') {
-      return { id };
+      return id;
     }
 
     throw new Error(

@@ -22,8 +22,8 @@ describe('User controller', () => {
   it('should get all users', async () => {
     // Configurar el comportamiento del servicio mock
     const users: User[] = [
-      { id: { id: 1 }, name: 'User1' },
-      { id: { id: 2 }, name: 'User2' }
+      { id: 1, name: 'User1' },
+      { id: 2, name: 'User2' }
     ];
     when(mockedService.getAllUsers()).thenResolve(users);
 
