@@ -6,7 +6,7 @@
     "build": "npm-run-all build:clean build:compile",
     "build:clean": "rimraf dist",
     "build:compile": "tsc -p tsconfig.json",
-    "database:dev:clean": "rimraf src/**/*.sqlite3",
+    "database:dev:clean": "rimraf src/db/*.sqlite3 dist/db/*.sqlite3",
     "start": "node dist/index.js",
     "start:dev": "npm-run-all database:dev:clean start:dev:run",
     "start:dev:run": "ts-node src/index.ts",
@@ -16,7 +16,7 @@
     "test": "npm-run-all test:unit test:int test:e2e",
     "test:unit": "jest --config jest.config.js --collect-coverage --verbose",
     "test:int": "jest --config jest.config.int.js --collect-coverage --verbose",
-    "test:e2e": "npm-run-all -c test:e2e:setup test:e2e:run test:e2e:teardown",
+    "test:e2e": "npm-run-all -c database:dev:clean test:e2e:setup test:e2e:run test:e2e:teardown",
     "test:e2e:setup": "node dist/index.js & sleep 2",
     "test:e2e:teardown": "pkill -f 'node dist/index.js'",
     "test:e2e:run": "jest --config jest.config.e2e.js --verbose"
