@@ -34,7 +34,7 @@ describe('UserService test', () => {
     // Then
     expect(user.name).toEqual(name);
     verify(mockedRepository.findByName(name)).once();
-    verify(mockedRepository.save(user)).once();
+    verify(mockedRepository.create(user)).once();
   });
 
   it('Should nod create user if user with name already exists', async () => {
@@ -51,7 +51,7 @@ describe('UserService test', () => {
 
     // Then
     verify(mockedRepository.findByName(name)).once();
-    verify(mockedRepository.save(anything())).never();
+    verify(mockedRepository.create(anything())).never();
   });
 
   it('Should get all users', async () => {

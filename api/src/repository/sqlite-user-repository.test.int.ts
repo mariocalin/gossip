@@ -1,7 +1,5 @@
-import {
-  type SQLiteContext,
-  provideSQLite3Context
-} from '../db/sqlite-context';
+import { provideSQLite3Context } from '../db/dbcontext';
+import { SQLiteContext } from '../db/sqlite-context';
 import { provideId } from '../model/id';
 import { type User } from '../model/user';
 import { SQLiteUserRepository } from './sqlite-user-repository';
@@ -11,12 +9,12 @@ describe('SQLiteUserRepository', () => {
   let testDb: SQLiteContext;
 
   beforeAll(async () => {
-    testDb = await provideSQLite3Context();
+    testDb = new SQLiteContext(await provideSQLite3Context());
     sut = new SQLiteUserRepository(testDb);
   });
 
   afterAll(async () => {
-    testDb.destroy(() => {});
+    await testDb.destroy();
   });
 
   it('Should get all users', async () => {
@@ -31,8 +29,8 @@ describe('SQLiteUserRepository', () => {
       name: 'get-test-user-2'
     };
 
-    await sut.save(testUser1);
-    await sut.save(testUser2);
+    await sut.create(testUser1);
+    await sut.create(testUser2);
 
     const testUsers = [testUser1, testUser2];
 
@@ -55,7 +53,7 @@ describe('SQLiteUserRepository', () => {
     };
 
     // When save user
-    await sut.save(testUser);
+    await sut.create(testUser);
 
     // Expect to be stored
     const storedUser = await sut.find(userId);

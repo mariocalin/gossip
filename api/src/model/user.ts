@@ -10,5 +10,5 @@ export interface UserRepository {
   find: (userId: Id) => Promise<User | null>;
   findByName: (name: string) => Promise<User | null>;
   findAll: () => Promise<User[]>;
-  save: (user: User) => Promise<void>;
+  create: (user: User) => Promise<void>;
 }

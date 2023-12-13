@@ -15,7 +15,7 @@ export class UserService {
       throw new Error('User already exists');
     }
 
-    await this.userRepository.save(user);
+    await this.userRepository.create(user);
 
     return user;
   }

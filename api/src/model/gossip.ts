@@ -12,3 +12,9 @@ export interface Gossip {
     trust: Trust;
   }>;
 }
+
+export interface GossipRepository {
+  find: (id: Id) => Promise<Gossip | null>;
+  findAll: () => Promise<Gossip[]>;
+  create: (gossip: Gossip) => Promise<void>;
+}

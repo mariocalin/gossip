@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { UserService } from '../service/user-service';
 import { isString } from 'lodash';
-import Logger from 'jet-logger';
 
 @Controller('user')
 export class UserController {
@@ -17,7 +16,6 @@ export class UserController {
 
   @Post()
   async createUser(req: Request, res: Response): Promise<Response> {
-    Logger.info(req.body, true);
     if (!isString(req.body.name)) {
       return res
         .status(StatusCodes.BAD_REQUEST)

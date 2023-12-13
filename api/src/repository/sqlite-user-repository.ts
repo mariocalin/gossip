@@ -1,79 +1,54 @@
-import { type SQLiteContext } from '../db/sqlite-context';
+import { type Statement } from 'sqlite3';
 import { type Id } from '../model/id';
 import { type UserRepository, type User } from '../model/user';
-import { isNullOrUndefined } from '../utils';
+import { type SQLiteContext } from '../db/sqlite-context';
 
 export class SQLiteUserRepository implements UserRepository {
-  constructor(private readonly sqliteContext: SQLiteContext) {}
+  constructor(private readonly dbContext: SQLiteContext) {}
 
   async find(userId: Id): Promise<User | null> {
     const query = 'SELECT * FROM AppUser WHERE id = ?';
-
-    return await new Promise((resolve, reject) => {
-      this.sqliteContext.get(query, [userId], (err, row) => {
-        if (err != null) {
-          reject(err);
-        } else {
-          resolve(this.mapRowToUser(row));
-        }
-      });
-    });
+    const stmt: Statement = await this.dbContext.prepareStatement(query, [
+      userId
+    ]);
+    const row = await this.dbContext.get(stmt, []);
+    const user = row != null ? this.mapRowToUser(row) : null;
+    await this.dbContext.finalizeStatement(stmt);
+    return user;
   }
 
   async findByName(name: string): Promise<User | null> {
     const query = 'SELECT * FROM AppUser WHERE name = ?';
-
-    return await new Promise((resolve, reject) => {
-      this.sqliteContext.get(query, [name], (err, row) => {
-        if (err != null) {
-          reject(err);
-        } else if (isNullOrUndefined(row)) {
-          resolve(null);
-        } else {
-          resolve(this.mapRowToUser(row));
-        }
-      });
-    });
+    const stmt: Statement = await this.dbContext.prepareStatement(query, [
+      name
+    ]);
+    const row = await this.dbContext.get(stmt, []);
+    const user = row != null ? this.mapRowToUser(row) : null;
+    await this.dbContext.finalizeStatement(stmt);
+    return user;
   }
 
   async findAll(): Promise<User[]> {
     const query = 'SELECT * FROM AppUser';
-
-    return await new Promise((resolve, reject) => {
-      this.sqliteContext.all(query, (err, rows) => {
-        if (err != null) {
-          reject(err);
-        } else {
-          try {
-            const users = rows.map((row) => this.mapRowToUser(row));
-            resolve(users);
-          } catch (mappingError) {
-            reject(mappingError);
-          }
-        }
-      });
-    });
+    const stmt: Statement = await this.dbContext.prepareStatement(query);
+    const rows = await this.dbContext.all(stmt);
+    const users = rows.map((row) => this.mapRowToUser(row));
+    await this.dbContext.finalizeStatement(stmt);
+    return users;
   }
 
-  async save(user: User): Promise<void> {
-    await new Promise<void>((resolve, reject) => {
-      const query = 'INSERT INTO AppUser (id, name, picture) VALUES (?, ?, ?)';
-      const params = [user.id, user.name, user.picture ?? null];
-
-      const stmt = this.sqliteContext.prepare(query);
-
-      stmt.run(params, function (err: null) {
-        stmt.finalize();
-        if (err != null) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
+  async create(user: User): Promise<void> {
+    const query = 'INSERT INTO AppUser (id, name, picture) VALUES (?, ?, ?)';
+    const params = [user.id, user.name, user.picture ?? null];
+    const stmt: Statement = await this.dbContext.prepareStatement(
+      query,
+      params
+    );
+    await this.dbContext.run(stmt);
+    await this.dbContext.finalizeStatement(stmt);
   }
 
-  private mapRowToUser(row: unknown): User {
+  private mapRowToUser(row: any): User {
     if (row != null && typeof row === 'object') {
       const typedRow = row as Record<string, any>;
 

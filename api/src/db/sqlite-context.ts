@@ -1,81 +1,105 @@
-import { Database } from 'sqlite3';
-import { type DbContext } from './dbcontext';
+import { type Statement, type Database } from 'sqlite3';
 import Logger from 'jet-logger';
 
-export class SQLiteContext implements DbContext {
+export class SQLiteContext {
   constructor(private readonly db: Database) {}
 
-  get(
-    query: string,
-    params: any[],
-    callback: (err: Error | null, row: any) => void
-  ): void {
-    this.db.get(query, params, callback);
-  }
-
-  all(query: string, callback: (err: Error | null, rows: any[]) => void): void {
-    this.db.all(query, callback);
-  }
-
-  exec(query: string, callback: (err: Error | null) => void): void {
-    this.db.exec(query, callback);
-  }
-
-  prepare(query: string): any {
-    return this.db.prepare(query);
-  }
-
-  destroy(callback: (err: Error | null) => void): void {
-    this.db.close(callback);
-  }
-}
-
-export async function provideSQLite3Context(
-  dbPath: string = ':memory:'
-): Promise<SQLiteContext> {
-  const db = new Database(dbPath);
-
-  // Lee el contenido del archivo
-  const schemaSQL = `
-    -- USER
-    CREATE TABLE IF NOT EXISTS AppUser (
-    id INTEGER PRIMARY KEY,
-    name TEXT,
-    picture TEXT
-    );
-
-    -- GOSSIP
-    CREATE TABLE IF NOT EXISTS Gossip (
-    id INTEGER PRIMARY KEY,
-    content TEXT,
-    creatorId INTEGER,
-    creationDate DATETIME,
-    FOREIGN KEY (creatorId) REFERENCES AppUser(id)
-    );
-
-    -- TURST
-    CREATE TABLE IF NOT EXISTS Trust (
-    gossipId INTEGER,
-    userId INTEGER,
-    trust TEXT,
-    FOREIGN KEY (gossipId) REFERENCES Gossip(id),
-    FOREIGN KEY (userId) REFERENCES AppUser(id),
-    PRIMARY KEY (gossipId, userId)
-    );
-`;
-
-  await new Promise((resolve, reject) => {
-    db.exec(schemaSQL, (err) => {
-      if (err != null) {
-        Logger.err('Error al ejecutar el esquema SQL:');
-        Logger.err(err, true);
-        reject(err);
-      } else {
-        Logger.info('Esquema SQL cargado correctamente.');
-        resolve('');
-      }
+  async get(stmt: Statement, params: any[] = []): Promise<any> {
+    return await new Promise((resolve, reject) => {
+      stmt.get(params, (err, row) => {
+        if (err != null) {
+          reject(err);
+        } else {
+          resolve(row);
+        }
+      });
     });
-  });
+  }
 
-  return new SQLiteContext(db);
+  async all(stmt: Statement): Promise<any[]> {
+    return await new Promise((resolve, reject) => {
+      stmt.all((err, rows) => {
+        if (err != null) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
+    });
+  }
+
+  async exec(stmt: Statement): Promise<void> {
+    await new Promise<void>((resolve, reject) => {
+      stmt.run((err) => {
+        if (err != null) {
+          Logger.err(`Error executing statement.`);
+          Logger.err(err);
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  async run(stmt: Statement, params: any[] = []): Promise<void> {
+    await new Promise<void>((resolve, reject) => {
+      stmt.run(params, function (err: null) {
+        if (err != null) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  async prepareStatement(
+    query: string,
+    params: any[] = []
+  ): Promise<Statement> {
+    return await new Promise((resolve, reject) => {
+      const stmt = this.db.prepare(query, (err) => {
+        if (err != null) {
+          Logger.err(`Error preparing statement.`);
+          Logger.err(err);
+          reject(err);
+        }
+      });
+
+      stmt.bind(params, (err: any) => {
+        if (err != null) {
+          Logger.err(`Error binding parameters to statement.`);
+          Logger.err(err);
+          reject(err);
+        }
+      });
+
+      resolve(stmt);
+    });
+  }
+
+  async finalizeStatement(stmt: Statement): Promise<void> {
+    await new Promise<void>((resolve, reject) => {
+      stmt.finalize((err) => {
+        if (err != null) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  async destroy(): Promise<void> {
+    await new Promise<void>((resolve, reject) => {
+      this.db.close((err) => {
+        if (err != null) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
 }

@@ -28,7 +28,7 @@ describe('User controller', () => {
   });
 
   it('should call service and return all users in json', async () => {
-    // Configurar el comportamiento del servicio mock
+    // Given a set of users
     const users: User[] = [
       { id: 1, name: 'User1' },
       { id: 2, name: 'User2' }
@@ -36,22 +36,23 @@ describe('User controller', () => {
 
     when(mockedService.getAllUsers()).thenResolve(users);
 
-    // Ejecutar el método del controlador que estás probando
+    // When request is sent
     await request(api.app)
       .get('/user/')
       .expect(200)
       .then((response) => {
+        // Expect response to have users
         expect(response.body).toEqual(users);
       })
       .catch((err) => {
         throw new Error(err);
       });
 
+    // Verify
     verify(mockedService.getAllUsers()).once();
   });
 
   it('should call create user service with valid name', async () => {
-    // Configurar el comportamiento del servicio mock
     const name = 'My name';
 
     const mockUser: User = {
@@ -61,7 +62,6 @@ describe('User controller', () => {
 
     when(mockedService.createUser(name)).thenResolve(mockUser);
 
-    // Ejecutar el método del controlador que estás probando
     await request(api.app)
       .post('/user/')
       .send({
@@ -81,7 +81,6 @@ describe('User controller', () => {
   });
 
   it('should return bad request when calling createUser with no name', async () => {
-    // Ejecutar el método del controlador que estás probando
     await request(api.app)
       .post('/user/')
       .send()
@@ -115,7 +114,6 @@ describe('User controller', () => {
   });
 
   it('should return bad request when calling createUser with no string in name', async () => {
-    // Ejecutar el método del controlador que estás probando
     await request(api.app)
       .post('/user/')
       .send({

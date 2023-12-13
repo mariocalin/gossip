@@ -23,7 +23,7 @@ describe('Create gossip', () => {
         },
         {
           headers: {
-            Authorization: user.id
+            Authorization: `Bearer ${user.id}`
           }
         }
       );
