@@ -4,6 +4,6 @@ module.exports = {
   transform: {
     '^.+\\.ts$': 'ts-jest'
   },
-  testMatch: ['<rootDir>/src/**/*.test.ts'],
-  testPathIgnorePatterns: ['/e2e']
+  testMatch: ['<rootDir>/src/**/?(*.)+(spec|test).ts'],
+  testPathIgnorePatterns: ['/e2e', '.int.test.ts']
 };
