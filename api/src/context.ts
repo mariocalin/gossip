@@ -22,23 +22,14 @@ export interface AppContext {
 }
 
 export async function provideContext(): Promise<AppContext> {
-  const sqliteContext = new SQLiteContext(
-    await provideSQLite3Context(path.join(__dirname, 'db/db-file.sqlite3'))
-  );
+  const sqliteContext = new SQLiteContext(await provideSQLite3Context(path.join(__dirname, 'db/db-file.sqlite3')));
 
-  const userRepository: UserRepository = new SQLiteUserRepository(
-    sqliteContext
-  );
-  const gossipRepository: GossipRepository = new SQLiteGossipRepository(
-    sqliteContext
-  );
+  const userRepository: UserRepository = new SQLiteUserRepository(sqliteContext);
+  const gossipRepository: GossipRepository = new SQLiteGossipRepository(sqliteContext);
 
   const userService: UserService = new UserService(userRepository);
   const authService: AuthService = new AuthService(userRepository);
-  const gossipService: GossipService = new GossipService(
-    gossipRepository,
-    userRepository
-  );
+  const gossipService: GossipService = new GossipService(gossipRepository, userRepository);
 
   const context: AppContext = {
     repository: {

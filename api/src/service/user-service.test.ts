@@ -1,11 +1,4 @@
-import {
-  anything,
-  instance,
-  mock,
-  reset,
-  verify,
-  when
-} from '@typestrong/ts-mockito';
+import { anything, instance, mock, reset, verify, when } from '@typestrong/ts-mockito';
 import { UserService } from './user-service';
 import { provideId } from '../model/id';
 import { type UserRepository, type User } from '../model/user';

@@ -1,9 +1,7 @@
 import { Database } from 'sqlite3';
 import Logger from 'jet-logger';
 
-export async function provideSQLite3Context(
-  dbPath: string = ':memory:'
-): Promise<Database> {
+export async function provideSQLite3Context(dbPath: string = ':memory:'): Promise<Database> {
   const db = new Database(dbPath);
 
   // Lee el contenido del archivo

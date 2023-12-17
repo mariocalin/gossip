@@ -5,8 +5,7 @@ import { type User } from '../model/user';
 import { SQLiteUserRepository } from './sqlite-user-repository';
 
 describe('SQLiteUserRepository', () => {
-  const samplePicture =
-    'https://fastly.picsum.photos/id/840/200/300.jpg?hmac=Z8Mc1xk7GaQHQ1hkPTK4cY0dYIxDKGBCHrgyaDqE0u0';
+  const samplePicture = 'https://fastly.picsum.photos/id/840/200/300.jpg?hmac=Z8Mc1xk7GaQHQ1hkPTK4cY0dYIxDKGBCHrgyaDqE0u0';
   let sut: SQLiteUserRepository;
   let testDb: SQLiteContext;
   let existingUser: User;

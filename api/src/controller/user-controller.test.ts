@@ -1,13 +1,6 @@
 import { Api } from '../server';
 import request from 'supertest';
-import {
-  anything,
-  instance,
-  mock,
-  reset,
-  verify,
-  when
-} from '@typestrong/ts-mockito';
+import { anything, instance, mock, reset, verify, when } from '@typestrong/ts-mockito';
 import { UserController } from './user-controller';
 import { type UserService } from '../service/user-service';
 import { type User } from '../model/user';

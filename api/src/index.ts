@@ -18,10 +18,7 @@ async function startApplication(): Promise<void> {
 
     const userController = new UserController(context.service.userService);
 
-    const gossipController = new GossipController(
-      context.service.gossipService,
-      context.service.authService
-    );
+    const gossipController = new GossipController(context.service.gossipService, context.service.authService);
 
     await application.loadControllers([userController, gossipController]);
     Logger.info('Context loaded');

@@ -2,11 +2,7 @@ import { type NextFunction, type Request, type Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { parseInt } from 'lodash';
 
-export function requireAuthorizationHeader(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void {
+export function requireAuthorizationHeader(req: Request, res: Response, next: NextFunction): void {
   const authorization = req.header('Authorization');
 
   if (authorization === undefined) {

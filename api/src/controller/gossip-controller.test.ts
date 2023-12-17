@@ -1,14 +1,7 @@
 import { GossipController } from './gossip-controller';
 import { Api } from '../server';
 import request from 'supertest';
-import {
-  anything,
-  instance,
-  mock,
-  reset,
-  verify,
-  when
-} from '@typestrong/ts-mockito';
+import { anything, instance, mock, reset, verify, when } from '@typestrong/ts-mockito';
 import { type GossipService } from '../service/gossip-service';
 import { type Gossip } from '../model/gossip';
 import { provideId } from '../model/id';
@@ -23,10 +16,7 @@ describe('Gossip controller', () => {
   const mockedUserId = provideId();
 
   beforeAll(() => {
-    sut = new GossipController(
-      instance(mockedService),
-      instance(mockedAuthrService)
-    );
+    sut = new GossipController(instance(mockedService), instance(mockedAuthrService));
 
     api.addControllers(sut);
   });

@@ -54,10 +54,7 @@ export class SQLiteContext {
     });
   }
 
-  async prepareStatement(
-    query: string,
-    params: any[] = []
-  ): Promise<Statement> {
+  async prepareStatement(query: string, params: any[] = []): Promise<Statement> {
     return await new Promise((resolve, reject) => {
       const stmt = this.db.prepare(query, (err) => {
         if (err != null) {

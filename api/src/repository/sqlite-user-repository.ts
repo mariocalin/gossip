@@ -3,15 +3,10 @@ import { type Id } from '../model/id';
 import { type UserRepository, type User } from '../model/user';
 import { SQLiteRepositoryBase } from './sqlite-repository';
 
-export class SQLiteUserRepository
-  extends SQLiteRepositoryBase
-  implements UserRepository
-{
+export class SQLiteUserRepository extends SQLiteRepositoryBase implements UserRepository {
   async find(userId: Id): Promise<User | null> {
     const query = 'SELECT * FROM AppUser WHERE id = ?';
-    const stmt: Statement = await this.dbContext.prepareStatement(query, [
-      userId
-    ]);
+    const stmt: Statement = await this.dbContext.prepareStatement(query, [userId]);
     const row = await this.dbContext.get(stmt);
     const user = row != null ? this.mapRowToUser(row) : null;
     await this.dbContext.finalizeStatement(stmt);
@@ -20,9 +15,7 @@ export class SQLiteUserRepository
 
   async findByName(name: string): Promise<User | null> {
     const query = 'SELECT * FROM AppUser WHERE name = ?';
-    const stmt: Statement = await this.dbContext.prepareStatement(query, [
-      name
-    ]);
+    const stmt: Statement = await this.dbContext.prepareStatement(query, [name]);
     const row = await this.dbContext.get(stmt);
     const user = row != null ? this.mapRowToUser(row) : null;
     await this.dbContext.finalizeStatement(stmt);
@@ -41,10 +34,7 @@ export class SQLiteUserRepository
   async create(user: User): Promise<void> {
     const query = 'INSERT INTO AppUser (id, name, picture) VALUES (?, ?, ?)';
     const params = [user.id, user.name, user.picture ?? null];
-    const stmt: Statement = await this.dbContext.prepareStatement(
-      query,
-      params
-    );
+    const stmt: Statement = await this.dbContext.prepareStatement(query, params);
     await this.dbContext.run(stmt);
     await this.dbContext.finalizeStatement(stmt);
   }

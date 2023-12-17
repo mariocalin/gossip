@@ -23,6 +23,8 @@
         "sourceType": "module" // This is for TypeScript files
       },
       "rules": {
+        "max-len": ["error", { "code": 140 }],
+        "indent": ["error", 2, { "offsetTernaryExpressions": true }],
         "@typescript-eslint/semi": ["error", "always"],
         "@typescript-eslint/space-before-function-paren": [
           "error",

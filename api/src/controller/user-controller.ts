@@ -17,17 +17,13 @@ export class UserController {
   @Post()
   async createUser(req: Request, res: Response): Promise<Response> {
     if (!isString(req.body.name)) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ name: 'Missing name parameter or not a string' });
+      return res.status(StatusCodes.BAD_REQUEST).json({ name: 'Missing name parameter or not a string' });
     }
 
     const name = req.body.name as string;
 
     const user = await this.userService.createUser(name);
 
-    return res
-      .status(StatusCodes.CREATED)
-      .json({ ...user, creationDate: new Date() });
+    return res.status(StatusCodes.CREATED).json({ ...user, creationDate: new Date() });
   }
 }

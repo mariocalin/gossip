@@ -11,29 +11,19 @@ export abstract class SQLiteRepositoryBase {
       return propertyValue;
     }
 
-    throw new Error(
-      `Mapping Error: The "${fieldName}" field is not of the expected type (number).`
-    );
+    throw new Error(`Mapping Error: The "${fieldName}" field is not of the expected type (number).`);
   }
 
-  protected assertStringProperty(
-    row: Record<string, any>,
-    propertyName: string
-  ): string {
+  protected assertStringProperty(row: Record<string, any>, propertyName: string): string {
     const propertyValue = row[propertyName];
     if (typeof propertyValue === 'string') {
       return propertyValue;
     }
 
-    throw new Error(
-      `Mapping Error: The "${propertyName}" field is not of the expected type (string).`
-    );
+    throw new Error(`Mapping Error: The "${propertyName}" field is not of the expected type (string).`);
   }
 
-  protected assertDateProperty(
-    row: Record<string, any>,
-    propertyName: string
-  ): Date {
+  protected assertDateProperty(row: Record<string, any>, propertyName: string): Date {
     const propertyValue = row[propertyName];
 
     if (typeof propertyValue === 'string') {
@@ -44,15 +34,10 @@ export abstract class SQLiteRepositoryBase {
       }
     }
 
-    throw new Error(
-      `Mapping Error: The "${propertyName}" field is not of the expected type (Date).`
-    );
+    throw new Error(`Mapping Error: The "${propertyName}" field is not of the expected type (Date).`);
   }
 
-  protected assertOptionalStringProperty(
-    row: Record<string, any>,
-    propertyName: string
-  ): string | undefined {
+  protected assertOptionalStringProperty(row: Record<string, any>, propertyName: string): string | undefined {
     const propertyValue = row[propertyName];
 
     if (typeof propertyValue === 'string') {

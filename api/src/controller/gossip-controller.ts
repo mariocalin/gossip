@@ -27,9 +27,7 @@ export class GossipController extends BaseController {
     const userId = await this.getCurrentUserOrFail(req);
 
     if (!isString(req.body.content)) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ content: 'Missing content parameter or not a string' });
+      return res.status(StatusCodes.BAD_REQUEST).json({ content: 'Missing content parameter or not a string' });
     }
 
     const content = req.body.content as string;
