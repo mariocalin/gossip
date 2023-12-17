@@ -31,7 +31,7 @@ describe('Gossip controller', () => {
     reset(mockedAuthrService);
   });
 
-  it('should call service and return all gossips in json', async () => {
+  it('GET /gossip should return 200 OK with all gossips json', async () => {
     const gossips: Gossip[] = getGossips();
     when(mockedService.getAllGossips()).thenResolve(gossips);
 
@@ -56,7 +56,7 @@ describe('Gossip controller', () => {
     verify(mockedService.getAllGossips()).once();
   });
 
-  it('should get content from request parameters and call service to create a Gossip with current user session', async () => {
+  it('POST /gossip should create a Gossip and return 201 CREATED', async () => {
     const content = 'This is a super gossip';
 
     when(mockedService.createGossip(mockedUserId, content)).thenResolve({
@@ -89,7 +89,7 @@ describe('Gossip controller', () => {
     verify(mockedService.createGossip(mockedUserId, content)).once();
   });
 
-  it('should not call service when request are invalid', async () => {
+  it('POST /gossip should return 400 BAD_REQUEST when parameters are invalid', async () => {
     await request(api.app)
       .post('/gossip/')
       .set('Authorization', `Bearer ${mockedUserId}`)

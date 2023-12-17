@@ -20,7 +20,7 @@ describe('User controller', () => {
     reset(mockedService);
   });
 
-  it('should call service and return all users in json', async () => {
+  it('GET /user/ should return 200 OK with all users in json', async () => {
     // Given a set of users
     const users: User[] = [
       { id: 1, name: 'User1' },
@@ -45,7 +45,7 @@ describe('User controller', () => {
     verify(mockedService.getAllUsers()).once();
   });
 
-  it('should call create user service with valid name', async () => {
+  it('POST /user should return 201 CREATED and create user', async () => {
     const name = 'My name';
 
     const mockUser: User = {
@@ -73,7 +73,7 @@ describe('User controller', () => {
     verify(mockedService.createUser(name)).once();
   });
 
-  it('should return bad request when calling createUser with no name', async () => {
+  it('POST /user should return 400 BAD_REQUEST when parameters have no name', async () => {
     await request(api.app)
       .post('/user/')
       .send()
@@ -88,8 +88,7 @@ describe('User controller', () => {
     verify(mockedService.createUser(anything())).never();
   });
 
-  it('should return bad request when calling createUser with no string in name', async () => {
-    // Ejecutar el método del controlador que estás probando
+  it('POST /user should return 400 BAD_REQUEST when parameters have name not in string', async () => {
     await request(api.app)
       .post('/user/')
       .send({
@@ -106,24 +105,7 @@ describe('User controller', () => {
     verify(mockedService.createUser(anything())).never();
   });
 
-  it('should return bad request when calling createUser with no string in name', async () => {
-    await request(api.app)
-      .post('/user/')
-      .send({
-        name: 25
-      })
-      .expect(400)
-      .then((response) => {
-        expect(response.body.name).toBeDefined();
-      })
-      .catch((err) => {
-        throw new Error(err);
-      });
-
-    verify(mockedService.createUser(anything())).never();
-  });
-
-  it('should return internal error when calling createUser produces error', async () => {
+  it('POST /user should return 500 INTERNAL_SERVER_ERROR when services produces error', async () => {
     when(mockedService.createUser(anything())).thenReject(new Error('Error'));
 
     await request(api.app)
