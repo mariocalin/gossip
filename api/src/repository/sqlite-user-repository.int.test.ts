@@ -5,6 +5,8 @@ import { type User } from '../model/user';
 import { SQLiteUserRepository } from './sqlite-user-repository';
 
 describe('SQLiteUserRepository', () => {
+  const samplePicture =
+    'https://fastly.picsum.photos/id/840/200/300.jpg?hmac=Z8Mc1xk7GaQHQ1hkPTK4cY0dYIxDKGBCHrgyaDqE0u0';
   let sut: SQLiteUserRepository;
   let testDb: SQLiteContext;
   let existingUser: User;
@@ -15,7 +17,8 @@ describe('SQLiteUserRepository', () => {
 
     existingUser = {
       id: provideId(),
-      name: 'existing-test-user-sqliteuserrepository'
+      name: 'existing-test-user-sqliteuserrepository',
+      picture: samplePicture
     };
 
     await sut.create(existingUser);
@@ -29,12 +32,14 @@ describe('SQLiteUserRepository', () => {
     // Given a set of users
     const testUser1: User = {
       id: provideId(),
-      name: 'get-test-user-1'
+      name: 'get-test-user-1',
+      picture: samplePicture
     };
 
     const testUser2: User = {
       id: provideId(),
-      name: 'get-test-user-2'
+      name: 'get-test-user-2',
+      picture: samplePicture
     };
 
     await sut.create(testUser1);
@@ -64,7 +69,8 @@ describe('SQLiteUserRepository', () => {
 
     const testUser: User = {
       id: userId,
-      name: 'should-create-user-test'
+      name: 'should-create-user-test',
+      picture: samplePicture
     };
 
     // When save user

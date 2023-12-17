@@ -1,11 +1,12 @@
 import { type Statement } from 'sqlite3';
 import { type Id } from '../model/id';
 import { type UserRepository, type User } from '../model/user';
-import { type SQLiteContext } from '../db/sqlite-context';
+import { SQLiteRepositoryBase } from './sqlite-repository';
 
-export class SQLiteUserRepository implements UserRepository {
-  constructor(private readonly dbContext: SQLiteContext) {}
-
+export class SQLiteUserRepository
+  extends SQLiteRepositoryBase
+  implements UserRepository
+{
   async find(userId: Id): Promise<User | null> {
     const query = 'SELECT * FROM AppUser WHERE id = ?';
     const stmt: Statement = await this.dbContext.prepareStatement(query, [
@@ -52,52 +53,13 @@ export class SQLiteUserRepository implements UserRepository {
     if (row != null && typeof row === 'object') {
       const typedRow = row as Record<string, any>;
 
-      const userId = this.mapToUserId(typedRow.id);
+      const userId = this.assertIdProperty(typedRow, 'id');
       const name = this.assertStringProperty(typedRow, 'name');
       const picture = this.assertOptionalStringProperty(typedRow, 'picture');
-
-      if (typeof userId !== 'number') {
-        throw new Error('Mapping Error: Incorrect type in the database row.');
-      }
 
       return { id: userId, name, picture };
     }
 
     throw new Error('Mapping Error: The database row is not an object.');
-  }
-
-  private mapToUserId(id: unknown): Id {
-    if (typeof id === 'number') {
-      return id;
-    }
-
-    throw new Error(
-      'Mapping Error: The "id" field is not of the expected type (number).'
-    );
-  }
-
-  private assertStringProperty(
-    row: Record<string, any>,
-    propertyName: string
-  ): string {
-    const propertyValue = row[propertyName];
-    if (typeof propertyValue === 'string') {
-      return propertyValue;
-    }
-    throw new Error(
-      `Mapping Error: The "${propertyName}" field is not of the expected type (string).`
-    );
-  }
-
-  private assertOptionalStringProperty(
-    row: Record<string, any>,
-    propertyName: string
-  ): string | undefined {
-    const propertyValue = row[propertyName];
-    if (typeof propertyValue === 'string') {
-      return propertyValue;
-    }
-
-    return undefined;
   }
 }

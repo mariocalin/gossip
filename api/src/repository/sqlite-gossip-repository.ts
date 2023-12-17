@@ -1,15 +1,9 @@
 import { type Statement } from 'sqlite3';
-import {
-  type GossipRepository,
-  type Gossip,
-  type Trust
-} from '../model/gossip';
+import { type GossipRepository, type Gossip, type Trust } from '../model/gossip';
 import { type Id } from '../model/id';
-import { type SQLiteContext } from '../db/sqlite-context';
+import { SQLiteRepositoryBase } from './sqlite-repository';
 
-export class SQLiteGossipRepository implements GossipRepository {
-  constructor(private readonly dbContext: SQLiteContext) {}
-
+export class SQLiteGossipRepository extends SQLiteRepositoryBase implements GossipRepository {
   async find(id: Id): Promise<Gossip | null> {
     const query =
       'SELECT Gossip.id, Gossip.content, Gossip.creatorId, Gossip.creationDate, Trust.userId, Trust.trust ' +
@@ -27,7 +21,7 @@ export class SQLiteGossipRepository implements GossipRepository {
     gossip.trust = rows
       .filter((row) => row.userId !== null && row.trust !== null)
       .map((row) => ({
-        user: this.mapToUserId(row.userId),
+        user: this.assertIdProperty(row, 'userId'),
         trust: row.trust as Trust
       }));
 
@@ -66,7 +60,10 @@ export class SQLiteGossipRepository implements GossipRepository {
 
       const trust =
         row.userId !== null && row.trust !== null
-          ? { user: this.mapToUserId(row.userId), trust: row.trust as Trust }
+          ? {
+              user: this.assertIdProperty(row, 'userId'),
+              trust: row.trust as Trust
+            }
           : null;
 
       if (trust != null) {
@@ -78,30 +75,17 @@ export class SQLiteGossipRepository implements GossipRepository {
   }
 
   async create(gossip: Gossip): Promise<void> {
-    const insertGossipQuery =
-      'INSERT INTO Gossip (id, content, creatorId, creationDate) VALUES (?, ?, ?, ?)';
-    const gossipParams = [
-      gossip.id,
-      gossip.content,
-      gossip.creator,
-      gossip.creationDate.toISOString()
-    ];
+    const insertGossipQuery = 'INSERT INTO Gossip (id, content, creatorId, creationDate) VALUES (?, ?, ?, ?)';
+    const gossipParams = [gossip.id, gossip.content, gossip.creator, gossip.creationDate.toISOString()];
 
-    const stmt = await this.dbContext.prepareStatement(
-      insertGossipQuery,
-      gossipParams
-    );
+    const stmt = await this.dbContext.prepareStatement(insertGossipQuery, gossipParams);
     await this.dbContext.exec(stmt);
 
     if (gossip.trust != null && gossip.trust.length > 0) {
-      const insertTrustQuery =
-        'INSERT INTO Trust (gossipId, userId, trust) VALUES (?, ?, ?)';
+      const insertTrustQuery = 'INSERT INTO Trust (gossipId, userId, trust) VALUES (?, ?, ?)';
       for (const trustEntry of gossip.trust) {
         const trustParams = [gossip.id, trustEntry.user, trustEntry.trust];
-        const innerStmt = await this.dbContext.prepareStatement(
-          insertTrustQuery,
-          trustParams
-        );
+        const innerStmt = await this.dbContext.prepareStatement(insertTrustQuery, trustParams);
 
         await this.dbContext.exec(innerStmt);
         await this.dbContext.finalizeStatement(innerStmt);
@@ -112,18 +96,12 @@ export class SQLiteGossipRepository implements GossipRepository {
   }
 
   private mapRowToGossip(row: any): Gossip {
-    const userId = row.creatorId as Id;
-
     return {
-      id: row.id as Id,
-      content: row.content as string,
-      creator: userId,
-      creationDate: new Date(row.creationDate),
+      id: this.assertIdProperty(row, 'id'),
+      content: this.assertStringProperty(row, 'content'),
+      creator: this.assertIdProperty(row, 'creatorId'),
+      creationDate: this.assertDateProperty(row, 'creationDate'),
       trust: []
     };
-  }
-
-  private mapToUserId(id: unknown): Id {
-    return id as Id;
   }
 }

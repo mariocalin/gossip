@@ -1,15 +1,16 @@
 import { type SQLiteContext } from '../db/sqlite-context';
 import { type Id } from '../model/id';
 
-// SQLiteRepositoryBase con funciones compartidas
 export abstract class SQLiteRepositoryBase {
-  constructor(protected readonly sqliteContext: SQLiteContext) {}
+  constructor(protected readonly dbContext: SQLiteContext) {}
 
-  // Funciones de utilidad comunes
-  protected assertNumberId(id: unknown, fieldName: string): Id {
-    if (typeof id === 'number') {
-      return id;
+  protected assertIdProperty(row: Record<string, any>, fieldName: string): Id {
+    const propertyValue = row[fieldName];
+
+    if (typeof propertyValue === 'number') {
+      return propertyValue;
     }
+
     throw new Error(
       `Mapping Error: The "${fieldName}" field is not of the expected type (number).`
     );
@@ -23,8 +24,28 @@ export abstract class SQLiteRepositoryBase {
     if (typeof propertyValue === 'string') {
       return propertyValue;
     }
+
     throw new Error(
       `Mapping Error: The "${propertyName}" field is not of the expected type (string).`
+    );
+  }
+
+  protected assertDateProperty(
+    row: Record<string, any>,
+    propertyName: string
+  ): Date {
+    const propertyValue = row[propertyName];
+
+    if (typeof propertyValue === 'string') {
+      const dateValue = new Date(propertyValue);
+
+      if (!isNaN(dateValue.getTime())) {
+        return dateValue;
+      }
+    }
+
+    throw new Error(
+      `Mapping Error: The "${propertyName}" field is not of the expected type (Date).`
     );
   }
 
@@ -33,6 +54,7 @@ export abstract class SQLiteRepositoryBase {
     propertyName: string
   ): string | undefined {
     const propertyValue = row[propertyName];
+
     if (typeof propertyValue === 'string') {
       return propertyValue;
     }
