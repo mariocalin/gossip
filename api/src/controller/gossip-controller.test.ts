@@ -99,6 +99,22 @@ describe('Gossip controller', () => {
     verify(mockedService.createGossip(mockedUserId, content)).once();
   });
 
+  it('should not call service when request are invalid', async () => {
+    await request(api.app)
+      .post('/gossip/')
+      .set('Authorization', `Bearer ${mockedUserId}`)
+      .send()
+      .expect(400)
+      .then((response) => {
+        expect(response.body.content).toBeDefined();
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
+
+    verify(mockedService.createGossip(anything(), anything())).never();
+  });
+
   function getGossips(): Gossip[] {
     return [
       {
