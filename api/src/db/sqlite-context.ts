@@ -4,9 +4,9 @@ import Logger from 'jet-logger';
 export class SQLiteContext {
   constructor(private readonly db: Database) {}
 
-  async get(stmt: Statement, params: any[] = []): Promise<any> {
+  async get(stmt: Statement): Promise<any> {
     return await new Promise((resolve, reject) => {
-      stmt.get(params, (err, row) => {
+      stmt.get((err, row) => {
         if (err != null) {
           reject(err);
         } else {
@@ -42,9 +42,9 @@ export class SQLiteContext {
     });
   }
 
-  async run(stmt: Statement, params: any[] = []): Promise<void> {
+  async run(stmt: Statement): Promise<void> {
     await new Promise<void>((resolve, reject) => {
-      stmt.run(params, function (err: null) {
+      stmt.run(function (err: null) {
         if (err != null) {
           reject(err);
         } else {

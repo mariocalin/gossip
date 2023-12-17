@@ -11,7 +11,7 @@ export class SQLiteUserRepository implements UserRepository {
     const stmt: Statement = await this.dbContext.prepareStatement(query, [
       userId
     ]);
-    const row = await this.dbContext.get(stmt, []);
+    const row = await this.dbContext.get(stmt);
     const user = row != null ? this.mapRowToUser(row) : null;
     await this.dbContext.finalizeStatement(stmt);
     return user;
@@ -22,7 +22,7 @@ export class SQLiteUserRepository implements UserRepository {
     const stmt: Statement = await this.dbContext.prepareStatement(query, [
       name
     ]);
-    const row = await this.dbContext.get(stmt, []);
+    const row = await this.dbContext.get(stmt);
     const user = row != null ? this.mapRowToUser(row) : null;
     await this.dbContext.finalizeStatement(stmt);
     return user;

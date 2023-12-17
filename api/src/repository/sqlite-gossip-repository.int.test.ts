@@ -7,17 +7,12 @@ import { SQLiteGossipRepository } from './sqlite-gossip-repository';
 describe('SQLiteGossipRepository', () => {
   let sut: SQLiteGossipRepository;
   let testDb: SQLiteContext;
+  let existingGossips: Gossip[];
 
   beforeAll(async () => {
     testDb = new SQLiteContext(await provideSQLite3Context());
     sut = new SQLiteGossipRepository(testDb);
-  });
 
-  afterAll(async () => {
-    await testDb.destroy();
-  });
-
-  it('Should get all gossips', async () => {
     // Given a set of gossips
     const testGossip1: Gossip = {
       id: provideId(),
@@ -38,18 +33,29 @@ describe('SQLiteGossipRepository', () => {
     await sut.create(testGossip1);
     await sut.create(testGossip2);
 
-    const testGossips = [testGossip1, testGossip2];
+    existingGossips = [testGossip1, testGossip2];
+  });
 
+  afterAll(async () => {
+    await testDb.destroy();
+  });
+
+  it('findAll', async () => {
     // When find all
     const storedGossips = await sut.findAll();
 
     // Expect each test gossip to be stored
-    testGossips.forEach((gossip) => {
+    existingGossips.forEach((gossip) => {
       expect(storedGossips).toContainEqual(gossip);
     });
   });
 
-  it('Should create gossip', async () => {
+  it('find', async () => {
+    const gossip = await sut.find(existingGossips[0].id);
+    expect(gossip).toEqual(existingGossips[0]);
+  });
+
+  it('create', async () => {
     // Given a valid gossip
     const testGossip: Gossip = {
       id: provideId(),

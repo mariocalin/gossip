@@ -7,17 +7,25 @@ import { SQLiteUserRepository } from './sqlite-user-repository';
 describe('SQLiteUserRepository', () => {
   let sut: SQLiteUserRepository;
   let testDb: SQLiteContext;
+  let existingUser: User;
 
   beforeAll(async () => {
     testDb = new SQLiteContext(await provideSQLite3Context());
     sut = new SQLiteUserRepository(testDb);
+
+    existingUser = {
+      id: provideId(),
+      name: 'existing-test-user-sqliteuserrepository'
+    };
+
+    await sut.create(existingUser);
   });
 
   afterAll(async () => {
     await testDb.destroy();
   });
 
-  it('Should get all users', async () => {
+  it('findAll', async () => {
     // Given a set of users
     const testUser1: User = {
       id: provideId(),
@@ -32,7 +40,7 @@ describe('SQLiteUserRepository', () => {
     await sut.create(testUser1);
     await sut.create(testUser2);
 
-    const testUsers = [testUser1, testUser2];
+    const testUsers = [testUser1, testUser2, existingUser];
 
     // When find all
     const storedUsers = await sut.findAll();
@@ -43,7 +51,14 @@ describe('SQLiteUserRepository', () => {
     });
   });
 
-  it('Should create user', async () => {
+  it('findByName', async () => {
+    const user = await sut.findByName(existingUser.name);
+
+    // Expect each test user to be stored
+    expect(user).toEqual(existingUser);
+  });
+
+  it('create', async () => {
     // Given a valid user
     const userId = provideId();
 
@@ -58,5 +73,10 @@ describe('SQLiteUserRepository', () => {
     // Expect to be stored
     const storedUser = await sut.find(userId);
     expect(storedUser).toEqual(testUser);
+  });
+
+  it('find', async () => {
+    const user = await sut.find(existingUser.id);
+    expect(user).toEqual(existingUser);
   });
 });
