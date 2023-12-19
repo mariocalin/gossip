@@ -1,6 +1,7 @@
-import { type Request } from 'express';
+import { type Request, type Response } from 'express';
 import { type Id } from '../model/id';
 import { type AuthService } from '../service/auth-service';
+import { StatusCodes } from 'http-status-codes';
 
 export abstract class BaseController {
   constructor(private readonly authService: AuthService) {}
@@ -29,5 +30,9 @@ export abstract class BaseController {
     }
 
     return userId;
+  }
+
+  protected sendInternalError(res: Response): Response {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send();
   }
 }

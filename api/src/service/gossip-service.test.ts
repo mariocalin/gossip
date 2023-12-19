@@ -1,7 +1,7 @@
 import { anything, instance, mock, reset, verify, when } from '@typestrong/ts-mockito';
 import { type Id, provideId } from '../model/id';
 import { type User, type UserRepository } from '../model/user';
-import { type Gossip, type GossipRepository } from '../model/gossip';
+import { type Trust, type Gossip, type GossipRepository } from '../model/gossip';
 import { GossipService } from './gossip-service';
 
 describe('GossipService test', () => {
@@ -19,59 +19,95 @@ describe('GossipService test', () => {
     reset(mockedGossipRepository);
   });
 
-  it('Should get all gossips from repository', async () => {
-    // Arrange
-    const allGosips = getGossips();
-    when(mockedGossipRepository.findAll()).thenResolve(allGosips);
+  describe('findAll', () => {
+    test('Should get all gossips from repository', async () => {
+      // Arrange
+      const allGosips = getGossips();
+      when(mockedGossipRepository.findAll()).thenResolve(allGosips);
 
-    // Act
-    const gossips = await sut.getAllGossips();
+      // Act
+      const gossips = await sut.getAllGossips();
 
-    // Assert
-    allGosips.forEach((gossip) => {
-      expect(gossips).toContain(gossip);
+      // Assert
+      allGosips.forEach((gossip) => {
+        expect(gossips).toContain(gossip);
+      });
+
+      verify(mockedGossipRepository.findAll()).once();
+    });
+  });
+
+  describe('createGossip', () => {
+    test('Should create gossip with an existing user and content', async () => {
+      // Arrange
+      const existingUserId = provideId();
+      const content = 'Some gossip';
+
+      when(mockedUserRepository.find(existingUserId)).thenResolve(someUser(existingUserId));
+
+      // Act
+      const result = await sut.createGossip(existingUserId, content);
+
+      // Assert
+      expect(result.isRight()).toBeTruthy();
+      result.ifRight((gossip) => {
+        expect(gossip.content).toEqual(content);
+        expect(gossip.creator).toEqual(existingUserId);
+
+        verify(mockedGossipRepository.create(gossip)).once();
+      });
+
+      verify(mockedUserRepository.find(existingUserId)).once();
     });
 
-    verify(mockedGossipRepository.findAll()).once();
+    test('Should not create gossip with a non existing user', async () => {
+      // Arrange
+      const nonExistingUserId = provideId();
+      const content = 'Some gossip';
+
+      when(mockedUserRepository.find(nonExistingUserId)).thenResolve(null);
+
+      // Act
+      const result = await sut.createGossip(nonExistingUserId, content);
+      expect(result.isLeft()).toBeTruthy();
+      expect(result.getLeft()).toEqual('USER DOES NOT EXISTS');
+
+      // Assert
+      verify(mockedGossipRepository.create(anything())).never();
+      verify(mockedUserRepository.find(nonExistingUserId)).once();
+    });
   });
 
-  it('Should create gossip with an existing user and content', async () => {
-    // Arrange
-    const existingUserId = provideId();
-    const content = 'Some gossip';
+  describe('trustGossip', () => {
+    test('Should not add trust with a non existing user', async () => {
+      // Arrange
+      const nonExistingUserId = provideId();
+      const trust: Trust = 'positive';
+      const gossipId = provideId();
 
-    when(mockedUserRepository.find(existingUserId)).thenResolve(someUser(existingUserId));
+      when(mockedUserRepository.find(nonExistingUserId)).thenResolve(null);
 
-    // Act
-    const gossip = await sut.createGossip(existingUserId, content);
+      // Act
+      await sut.trustGossip(trust, nonExistingUserId, gossipId);
 
-    // Assert
-    expect(gossip.content).toEqual(content);
-    expect(gossip.creator).toEqual(existingUserId);
+      // Assert
 
-    verify(mockedGossipRepository.create(gossip)).once();
-    verify(mockedUserRepository.find(existingUserId)).once();
+      expect(false).toBeTruthy();
+    });
+    test('Should not add trust with a non existing gossip', () => {
+      expect(false).toBeTruthy();
+    });
+    test('Should not add trust to an existing gossip with the same user that created the gossip', () => {
+      expect(false).toBeTruthy();
+    });
+    test('Should not add trust to an existing gossip with the same user that created the gossip', () => {
+      expect(false).toBeTruthy();
+    });
+    test('Should add positive trust to an existing gossip in which the user has not voted yet', () => {
+      expect(false).toBeTruthy();
+    });
   });
 
-  it('Should not create gossip with a non existing user', async () => {
-    // Arrange
-    const nonExistingUserId = provideId();
-    const content = 'Some gossip';
-
-    when(mockedUserRepository.find(nonExistingUserId)).thenResolve(null);
-
-    // Act
-
-    try {
-      await sut.createGossip(nonExistingUserId, content);
-    } catch (err) {
-      expect(err).toBeDefined();
-    }
-
-    // Assert
-    verify(mockedGossipRepository.create(anything())).never();
-    verify(mockedUserRepository.find(nonExistingUserId)).once();
-  });
   function getGossips(): Gossip[] {
     return [
       {

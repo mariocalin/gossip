@@ -5,6 +5,9 @@ import { GossipService } from '../service/gossip-service';
 import { BaseController } from './base-controller';
 import { AuthService } from '../service/auth-service';
 import { isString } from 'lodash';
+import { type ParamsDictionary } from 'express-serve-static-core';
+import { type Trust } from '../model/gossip';
+import { isNumeric } from '../utils';
 
 @Controller('gossip')
 export class GossipController extends BaseController {
@@ -32,8 +35,46 @@ export class GossipController extends BaseController {
 
     const content = req.body.content as string;
 
-    const gossip = await this.gossipService.createGossip(userId, content);
+    const result = await this.gossipService.createGossip(userId, content);
 
-    return res.status(StatusCodes.CREATED).json(gossip);
+    return result.fold(
+      (error) => {
+        return res.status(StatusCodes.BAD_REQUEST).json({ error });
+      },
+      (gossip) => {
+        return res.status(StatusCodes.CREATED).json(gossip);
+      }
+    );
+  }
+
+  @Post(':gossipId/:trust')
+  async positiveGossip(req: Request, res: Response): Promise<Response> {
+    const userId = await this.getCurrentUserOrFail(req);
+
+    if (!isNumeric(req.params.gossipId)) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ id: 'Bad id parameter' });
+    }
+
+    const trust = this.getTrustFromRequestOrFail(req.params);
+    if (trust === undefined) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ trust: 'Bad trust parameter' });
+    }
+
+    const gossipId = parseInt(req.params.gossipId);
+
+    const trusts = await this.gossipService.trustGossip(trust, userId, gossipId);
+    return res.status(StatusCodes.OK).json(trusts);
+  }
+
+  private getTrustFromRequestOrFail(params: ParamsDictionary): Trust | undefined {
+    const value = params.trust;
+
+    if (value === 'positive') {
+      return 'positive';
+    } else if (value === 'negative') {
+      return 'negative';
+    }
+
+    return undefined;
   }
 }

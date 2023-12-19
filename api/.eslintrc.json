@@ -24,7 +24,7 @@
       },
       "rules": {
         "max-len": ["error", { "code": 120 }],
-        "indent": ["error", 2, { "offsetTernaryExpressions": true }],
+        "indent": ["error", 2, { "offsetTernaryExpressions": true, "SwitchCase": 1 }],
         "@typescript-eslint/semi": ["error", "always"],
         "@typescript-eslint/space-before-function-paren": ["error", { "anonymous": "always", "named": "never" }],
         "@typescript-eslint/member-delimiter-style": [

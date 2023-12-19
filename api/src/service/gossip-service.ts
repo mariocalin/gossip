@@ -1,6 +1,11 @@
-import { type GossipRepository, type Gossip } from '../model/gossip';
-import { provideId } from '../model/id';
-import { type UserRepository } from '../model/user';
+import { Either } from '../arch/either';
+import { type GossipRepository, type Gossip, type GossipTrust, type Trust } from '../model/gossip';
+import { type Id, provideId } from '../model/id';
+import { type User, type UserRepository } from '../model/user';
+
+export type TrustGossipError = '';
+
+export type CreateGossipError = 'USER DOES NOT EXISTS';
 
 export class GossipService {
   constructor(
@@ -12,8 +17,12 @@ export class GossipService {
     return await this.gossipRepository.findAll();
   }
 
-  async createGossip(userId: number, content: string): Promise<Gossip> {
-    await this.ensureUserExists(userId);
+  async createGossip(userId: Id, content: string): Promise<Either<CreateGossipError, Gossip>> {
+    const user = await this.ensureUserExists(userId);
+
+    if (user === null) {
+      return Either.left('USER DOES NOT EXISTS');
+    }
 
     const gossip: Gossip = {
       id: provideId(),
@@ -25,14 +34,16 @@ export class GossipService {
 
     await this.gossipRepository.create(gossip);
 
-    return gossip;
+    return Either.right(gossip);
   }
 
-  private async ensureUserExists(userId: number): Promise<void> {
-    const user = await this.userRepository.find(userId);
+  async trustGossip(trust: Trust, userId: Id, gossipId: Id): Promise<GossipTrust[] | TrustGossipError> {
+    await this.ensureUserExists(userId);
 
-    if (user === null) {
-      throw new Error('User does not exists');
-    }
+    throw new Error('Method not implemented.');
+  }
+
+  private async ensureUserExists(userId: number): Promise<User | null> {
+    return await this.userRepository.find(userId);
   }
 }
