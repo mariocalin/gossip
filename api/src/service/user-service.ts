@@ -1,6 +1,6 @@
 import { provideId } from '../model/id';
 import { type UserRepository, type User } from '../model/user';
-import { isNullOrUndefined } from '../utils';
+import { isNullOrUndefined } from '../common/utils';
 
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}

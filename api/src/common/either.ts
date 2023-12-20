@@ -83,6 +83,19 @@ export class Either<L, R> {
     );
   }
 
+  ifLeft(consumer: (left: L) => void): void {
+    const throwFn = (): never => {
+      throw new Error('Cannot apply left to a right either');
+    };
+
+    this.fold(
+      (value) => {
+        consumer(value);
+      },
+      () => throwFn()
+    );
+  }
+
   static left<L, R>(value: L): Either<L, R> {
     return new Either<L, R>({ kind: 'left', leftValue: value });
   }

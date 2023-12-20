@@ -18,4 +18,5 @@ export interface GossipRepository {
   find: (id: Id) => Promise<Gossip | null>;
   findAll: () => Promise<Gossip[]>;
   create: (gossip: Gossip) => Promise<void>;
+  update: (gossip: Gossip) => Promise<void>;
 }

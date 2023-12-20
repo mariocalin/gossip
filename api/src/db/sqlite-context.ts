@@ -46,6 +46,21 @@ export class SQLiteContext {
     await new Promise<void>((resolve, reject) => {
       stmt.run(function (err: null) {
         if (err != null) {
+          Logger.err(err);
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  async runSql(sql: string): Promise<void> {
+    await new Promise<void>((resolve, reject) => {
+      this.db.run(sql, (err) => {
+        if (err != null) {
+          Logger.err(`Error executing SQL: ${sql}`);
+          Logger.err(err);
           reject(err);
         } else {
           resolve();
@@ -86,6 +101,24 @@ export class SQLiteContext {
         }
       });
     });
+  }
+
+  async runInTransaction(statements: Statement[]): Promise<void> {
+    // Iniciar la transacción
+    await this.runSql('BEGIN TRANSACTION');
+
+    try {
+      // Ejecutar las declaraciones preparadas dentro de la transacción
+      for (const stmt of statements) {
+        await this.exec(stmt);
+      }
+
+      await this.runSql('COMMIT');
+    } catch (error) {
+      await this.runSql('ROLLBACK');
+      Logger.err(`Transaction rolled back due to error:`);
+      throw error;
+    }
   }
 
   async destroy(): Promise<void> {

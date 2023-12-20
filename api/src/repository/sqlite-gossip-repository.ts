@@ -75,24 +75,66 @@ export class SQLiteGossipRepository extends SQLiteRepositoryBase implements Goss
   }
 
   async create(gossip: Gossip): Promise<void> {
+    const statements: Statement[] = [];
+
+    // Statement para insertar en Gossip
     const insertGossipQuery = 'INSERT INTO Gossip (id, content, creatorId, creationDate) VALUES (?, ?, ?, ?)';
     const gossipParams = [gossip.id, gossip.content, gossip.creator, gossip.creationDate.toISOString()];
+    const gossipStatement = await this.dbContext.prepareStatement(insertGossipQuery, gossipParams);
+    statements.push(gossipStatement);
 
-    const stmt = await this.dbContext.prepareStatement(insertGossipQuery, gossipParams);
-    await this.dbContext.exec(stmt);
-
+    // Statements para insertar en Trust
     if (gossip.trust != null && gossip.trust.length > 0) {
       const insertTrustQuery = 'INSERT INTO Trust (gossipId, userId, trust) VALUES (?, ?, ?)';
       for (const trustEntry of gossip.trust) {
         const trustParams = [gossip.id, trustEntry.user, trustEntry.trust];
-        const innerStmt = await this.dbContext.prepareStatement(insertTrustQuery, trustParams);
-
-        await this.dbContext.exec(innerStmt);
-        await this.dbContext.finalizeStatement(innerStmt);
+        const trustStatement = await this.dbContext.prepareStatement(insertTrustQuery, trustParams);
+        statements.push(trustStatement);
       }
     }
 
-    await this.dbContext.finalizeStatement(stmt);
+    await this.dbContext.runInTransaction(statements);
+
+    for (const stmt of statements) {
+      await this.dbContext.finalizeStatement(stmt);
+    }
+  }
+
+  async update(gossip: Gossip): Promise<void> {
+    const currentGossip = this.find(gossip.id);
+
+    if (currentGossip === undefined) {
+      throw new Error('Cannot update a gossip that does not exist yet');
+    }
+
+    const statements: Statement[] = [];
+
+    // Actualizar Gossip
+    const updateGossipQuery = 'UPDATE Gossip SET content = ?, creatorId = ?, creationDate = ? WHERE id = ?';
+    const updateGossipParams = [gossip.content, gossip.creator, gossip.creationDate.toISOString(), gossip.id];
+    const updateGossipStatement = await this.dbContext.prepareStatement(updateGossipQuery, updateGossipParams);
+    statements.push(updateGossipStatement);
+
+    // Actualizar Trust (si es necesario)
+    if (gossip.trust != null && gossip.trust.length > 0) {
+      const deleteTrustQuery = 'DELETE FROM Trust WHERE gossipId = ?';
+      const deleteTrustParams = [gossip.id];
+      const deleteTrustStatement = await this.dbContext.prepareStatement(deleteTrustQuery, deleteTrustParams);
+      statements.push(deleteTrustStatement);
+
+      const insertTrustQuery = 'INSERT INTO Trust (gossipId, userId, trust) VALUES (?, ?, ?)';
+      for (const trustEntry of gossip.trust) {
+        const insertTrustParams = [gossip.id, trustEntry.user, trustEntry.trust];
+        const insertTrustStatement = await this.dbContext.prepareStatement(insertTrustQuery, insertTrustParams);
+        statements.push(insertTrustStatement);
+      }
+    }
+
+    await this.dbContext.runInTransaction(statements);
+
+    for (const stmt of statements) {
+      await this.dbContext.finalizeStatement(stmt);
+    }
   }
 
   private mapRowToGossip(row: any): Gossip {

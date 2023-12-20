@@ -7,7 +7,7 @@ import { type Gossip, type GossipTrust } from '../model/gossip';
 import { provideId } from '../model/id';
 import { type AuthService } from '../service/auth-service';
 import { ServiceError } from '../service/service-error';
-import { Either } from '../arch/either';
+import { Either } from '../common/either';
 
 describe('Gossip controller', () => {
   const api = new Api();
@@ -131,7 +131,7 @@ describe('Gossip controller', () => {
         }
       ];
 
-      when(mockedService.trustGossip('positive', mockedUserId, gossipId)).thenResolve(trusts);
+      when(mockedService.trustGossip('positive', mockedUserId, gossipId)).thenResolve(Either.right(trusts));
 
       // When
       await request(api.app)
@@ -169,7 +169,7 @@ describe('Gossip controller', () => {
         }
       ];
 
-      when(mockedService.trustGossip('negative', mockedUserId, gossipId)).thenResolve(trusts);
+      when(mockedService.trustGossip('negative', mockedUserId, gossipId)).thenResolve(Either.right(trusts));
 
       // When
       await request(api.app)

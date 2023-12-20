@@ -7,7 +7,7 @@ import { AuthService } from '../service/auth-service';
 import { isString } from 'lodash';
 import { type ParamsDictionary } from 'express-serve-static-core';
 import { type Trust } from '../model/gossip';
-import { isNumeric } from '../utils';
+import { isNumeric } from '../common/utils';
 
 @Controller('gossip')
 export class GossipController extends BaseController {
@@ -62,8 +62,16 @@ export class GossipController extends BaseController {
 
     const gossipId = parseInt(req.params.gossipId);
 
-    const trusts = await this.gossipService.trustGossip(trust, userId, gossipId);
-    return res.status(StatusCodes.OK).json(trusts);
+    const result = await this.gossipService.trustGossip(trust, userId, gossipId);
+
+    return result.fold(
+      (error) => {
+        return res.status(StatusCodes.BAD_REQUEST).json({ error });
+      },
+      (trusts) => {
+        return res.status(StatusCodes.OK).json(trusts);
+      }
+    );
   }
 
   private getTrustFromRequestOrFail(params: ParamsDictionary): Trust | undefined {

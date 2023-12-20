@@ -18,7 +18,7 @@ export async function provideSQLite3Context(dbPath: string = ':memory:'): Promis
     id INTEGER PRIMARY KEY,
     content TEXT,
     creatorId INTEGER,
-    creationDate DATETIME,
+    creationDate TEXT,
     FOREIGN KEY (creatorId) REFERENCES AppUser(id)
     );
 
@@ -31,6 +31,9 @@ export async function provideSQLite3Context(dbPath: string = ':memory:'): Promis
     FOREIGN KEY (userId) REFERENCES AppUser(id),
     PRIMARY KEY (gossipId, userId)
     );
+
+    -- Enable foreign keys
+    PRAGMA foreign_keys = ON
 `;
 
   await new Promise((resolve, reject) => {
