@@ -1,0 +1,223 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Gossip API",
+    "version": "1.0.0",
+    "description": "API for creating and listing gossips created by users.",
+    "contact": {
+      "name": "Mario Calin",
+      "email": "mariocalinsanchez@gmail.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "Gossip",
+      "description": "Endpoints related to gossip"
+    },
+    {
+      "name": "User",
+      "description": "Endpoints related to user management"
+    }
+  ],
+  "paths": {
+    "/gossip": {
+      "get": {
+        "summary": "Get all gossip news",
+        "tags": ["Gossip"],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 1,
+                    "content": "Gossip content 1",
+                    "creator": 123,
+                    "creationDate": "2023-01-01T12:00:00Z",
+                    "trust": [{ "user": 456, "trust": "positive" }]
+                  },
+                  {
+                    "id": 2,
+                    "content": "Gossip content 2",
+                    "creator": 789,
+                    "creationDate": "2023-01-02T12:00:00Z",
+                    "trust": []
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Invalid parameters"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new gossip",
+        "tags": ["Gossip"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": { "type": "string" }
+                },
+                "required": ["content"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Gossip created successfully",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": 3,
+                  "content": "Content of the new gossip",
+                  "creator": 456,
+                  "creationDate": "2023-01-03T12:00:00Z",
+                  "trust": []
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Invalid parameters"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gossip/{gossipId}/{trust}": {
+      "post": {
+        "summary": "Mark a gossip as positive or negative",
+        "tags": ["Gossip"],
+        "parameters": [
+          {
+            "name": "gossipId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "ID of the gossip"
+          },
+          {
+            "name": "trust",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "enum": ["positive", "negative"] },
+            "description": "Trust type (positive or negative)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "example": [
+                  { "user": 789, "trust": "positive" },
+                  { "user": 123, "trust": "negative" }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Invalid parameters"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "summary": "Get all users",
+        "tags": ["User"],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "example": [
+                  { "id": 123, "name": "User 1", "picture": "Image URL" },
+                  { "id": 456, "name": "User 2", "picture": null }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Invalid parameters"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new user",
+        "tags": ["User"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" }
+                },
+                "required": ["name"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": 789,
+                  "name": "New User",
+                  "picture": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Invalid parameters"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
