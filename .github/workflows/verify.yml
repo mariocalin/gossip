@@ -1,0 +1,39 @@
+name: Api CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-scripts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js and Yarn
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies with Yarn
+        run: |
+          cd api
+          yarn install --frozen-lockfile
+
+      - name: Build with Yarn
+        run: cd api && yarn run build
+
+      - name: Lint with Yarn
+        run: cd api && yarn run lint
+
+      - name: Test Unit with Yarn
+        run: cd api && yarn run test:unit
+
+      - name: Test Integration with Yarn
+        run: cd api && yarn run test:int
+
+      - name: Test End-to-End with Yarn
+        run: cd api && yarn run test:e2e
