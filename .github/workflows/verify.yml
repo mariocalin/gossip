@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  API building and testing:
+  API-building-and-testing:
     runs-on: ubuntu-latest
 
     steps:
