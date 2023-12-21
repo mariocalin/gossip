@@ -5,6 +5,7 @@
 /api/dist/**
 /api/coverage/**
 /api/**/*.sqlite3
+/api/*.pid
 
 
 # Angular
