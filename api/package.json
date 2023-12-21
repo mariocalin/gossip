@@ -18,7 +18,7 @@
     "test:int": "jest --config jest.config.int.js --collect-coverage --verbose",
     "test:e2e": "npm-run-all -c database:dev:clean test:e2e:setup test:e2e:run test:e2e:teardown",
     "test:e2e:setup": "node dist/index.js & sleep 2",
-    "test:e2e:teardown": "pkill -f 'node dist/index.js'",
+    "test:e2e:teardown": "killall -q -9 'node dist/index.js' || true",
     "test:e2e:run": "jest --config jest.config.e2e.js --runInBand --verbose"
   },
   "keywords": [],
