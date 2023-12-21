@@ -1,4 +1,4 @@
-name: Api CI
+name: Building and testing
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  run-scripts:
+  API building and testing:
     runs-on: ubuntu-latest
 
     steps:
