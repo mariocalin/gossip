@@ -1,0 +1,14 @@
+/* styles.scss o styles.css */
+.user-list-item {
+  display: flex;
+  align-items: center;
+}
+
+.profile-image {
+  width: 20%;
+  margin-right: 16px; /* Ajusta el margen según sea necesario */
+}
+
+.user-details {
+  width: 80%;
+}
