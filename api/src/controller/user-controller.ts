@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { UserService } from '../service/user-service';
 import { isString } from 'lodash';
+import { isValidURL } from '../common/utils';
 
 @Controller('user')
 export class UserController {
@@ -20,9 +21,14 @@ export class UserController {
       return res.status(StatusCodes.BAD_REQUEST).json({ name: 'Missing name parameter or not a string' });
     }
 
-    const name = req.body.name as string;
+    if (req.body.picture !== undefined && !isValidURL(req.body.picture)) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ picture: 'Invalid picture format' });
+    }
 
-    const user = await this.userService.createUser(name);
+    const name = req.body.name as string;
+    const picture = req.body.picture as string;
+
+    const user = await this.userService.createUser(name, picture);
 
     return res.status(StatusCodes.CREATED).json({ ...user, creationDate: new Date() });
   }

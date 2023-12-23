@@ -1,4 +1,4 @@
-import { isNullOrUndefined, isNumeric } from './utils';
+import { isNullOrUndefined, isNumeric, isValidURL } from './utils';
 
 describe('isNullOrUndefined', () => {
   test('should return true for null', () => {
@@ -26,5 +26,22 @@ describe('isNumeric', () => {
     expect(isNumeric('abc')).toBe(false);
     expect(isNumeric('12.34')).toBe(false);
     expect(isNumeric('1e5')).toBe(false);
+  });
+});
+
+describe('isValidURL', () => {
+  it('should return true for a valid URL', () => {
+    expect(isValidURL('https://www.example.com')).toBe(true);
+    expect(isValidURL('ftp://my-server/file')).toBe(true);
+    expect(isValidURL('http://domain.com/path?param=value')).toBe(true);
+  });
+
+  it('should return false for an invalid URL', () => {
+    expect(isValidURL('invalid-url')).toBe(false);
+  });
+
+  it('should return false for an empty string or undefined', () => {
+    expect(isValidURL('')).toBe(false);
+    expect(isValidURL()).toBe(false);
   });
 });

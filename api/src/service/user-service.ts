@@ -5,10 +5,11 @@ import { isNullOrUndefined } from '../common/utils';
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async createUser(name: string): Promise<User> {
+  async createUser(name: string, picture?: string): Promise<User> {
     const user: User = {
       id: provideId(),
-      name
+      name,
+      picture
     };
 
     if (!isNullOrUndefined(await this.userRepository.findByName(name))) {

@@ -23,8 +23,8 @@ describe('User controller', () => {
   it('GET /user/ should return 200 OK with all users in json', async () => {
     // Given a set of users
     const users: User[] = [
-      { id: 1, name: 'User1' },
-      { id: 2, name: 'User2' }
+      { id: 1, name: 'User1', picture: 'https://example.org/picture.jpg' },
+      { id: 2, name: 'User2', picture: 'https://example.org/picture.jpg' }
     ];
 
     when(mockedService.getAllUsers()).thenResolve(users);
@@ -45,7 +45,7 @@ describe('User controller', () => {
     verify(mockedService.getAllUsers()).once();
   });
 
-  it('POST /user should return 201 CREATED and create user', async () => {
+  it('POST /user with name should return 201 CREATED and create user', async () => {
     const name = 'My name';
 
     const mockUser: User = {
@@ -53,7 +53,7 @@ describe('User controller', () => {
       name
     };
 
-    when(mockedService.createUser(name)).thenResolve(mockUser);
+    when(mockedService.createUser(name, anything())).thenResolve(mockUser);
 
     await request(api.app)
       .post('/user/')
@@ -63,14 +63,46 @@ describe('User controller', () => {
       .expect(201)
       .then((response) => {
         expect(response.body.id).toEqual(mockUser.id);
-        expect(response.body.name).toEqual(mockUser.name);
+        expect(response.body.name).toEqual(name);
         expect(response.body.creationDate).toBeDefined();
       })
       .catch((err) => {
         throw new Error(err);
       });
 
-    verify(mockedService.createUser(name)).once();
+    verify(mockedService.createUser(name, anything())).once();
+  });
+
+  it('POST /user with name and picture should return 201 CREATED and create user', async () => {
+    const name = 'My name';
+    const picture = 'https://example.org/picture.jpg';
+
+    const mockUser: User = {
+      id: provideId(),
+      name,
+      picture
+    };
+
+    when(mockedService.createUser(name, picture)).thenResolve(mockUser);
+
+    await request(api.app)
+      .post('/user/')
+      .send({
+        name,
+        picture
+      })
+      .expect(201)
+      .then((response) => {
+        expect(response.body.id).toEqual(mockUser.id);
+        expect(response.body.name).toEqual(name);
+        expect(response.body.picture).toEqual(picture);
+        expect(response.body.creationDate).toBeDefined();
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
+
+    verify(mockedService.createUser(name, picture)).once();
   });
 
   it('POST /user should return 400 BAD_REQUEST when parameters have no name', async () => {
@@ -80,6 +112,24 @@ describe('User controller', () => {
       .expect(400)
       .then((response) => {
         expect(response.body.name).toBeDefined();
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
+
+    verify(mockedService.createUser(anything())).never();
+  });
+
+  it('POST /user should return 400 BAD_REQUEST when parameters have name but not a valid picture', async () => {
+    await request(api.app)
+      .post('/user/')
+      .send({
+        name: 'My name',
+        picture: 'Wrong picture'
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.picture).toBeDefined();
       })
       .catch((err) => {
         throw new Error(err);
@@ -106,7 +156,7 @@ describe('User controller', () => {
   });
 
   it('POST /user should return 500 INTERNAL_SERVER_ERROR when services produces error', async () => {
-    when(mockedService.createUser(anything())).thenReject(new Error('Error'));
+    when(mockedService.createUser(anything(), anything())).thenReject(new Error('Error'));
 
     await request(api.app)
       .post('/user/')
