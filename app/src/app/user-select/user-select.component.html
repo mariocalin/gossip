@@ -2,13 +2,9 @@
   <div mat-subheader>Choose a user</div>
   @for (user of userList(); track user.id) {
   <mat-list-item>
-    <div class="profile-image">
-      <mat-icon>account_circle</mat-icon>
-    </div>
-    <div class="user-details">
-      <div mat-line>{{ user.name }}</div>
-      <div mat-line>{{ user.id }}</div>
-    </div>
+    <img matListItemAvatar [src]="user.picture" alt="Photo of a Shiba Inu" />
+    <div matListItemTitle>{{ user.name }}</div>
+    <div matListItemLine>{{ user.id }}</div>
   </mat-list-item>
   }
 </mat-list>
