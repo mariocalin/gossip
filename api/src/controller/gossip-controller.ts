@@ -55,7 +55,7 @@ export class GossipController extends BaseController {
       return res.status(StatusCodes.BAD_REQUEST).json({ id: 'Bad id parameter' });
     }
 
-    const trust = this.getTrustFromRequestOrFail(req.params);
+    const trust = this.getTrustFromRequest(req.params);
     if (trust === undefined) {
       return res.status(StatusCodes.BAD_REQUEST).json({ trust: 'Bad trust parameter' });
     }
@@ -74,7 +74,7 @@ export class GossipController extends BaseController {
     );
   }
 
-  private getTrustFromRequestOrFail(params: ParamsDictionary): Trust | undefined {
+  private getTrustFromRequest(params: ParamsDictionary): Trust | undefined {
     const value = params.trust;
 
     if (value === 'positive') {
