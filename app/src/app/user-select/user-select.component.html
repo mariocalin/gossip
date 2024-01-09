@@ -1,7 +1,7 @@
 <mat-list>
   <div mat-subheader>Choose a user</div>
   @for (user of userList(); track user.id) {
-  <mat-list-item>
+  <mat-list-item (click)="selectUser(user)">
     <img matListItemAvatar [src]="user.picture" alt="Photo of a Shiba Inu" />
     <div matListItemTitle>{{ user.name }}</div>
     <div matListItemLine>{{ user.id }}</div>

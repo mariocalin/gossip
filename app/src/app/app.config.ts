@@ -1,5 +1,9 @@
 import { ApplicationConfig } from '@angular/core';
-import { provideRouter, withViewTransitions } from '@angular/router';
+import {
+  provideRouter,
+  withDebugTracing,
+  withViewTransitions,
+} from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -8,7 +12,7 @@ import { Api } from './core/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    provideRouter(routes, withDebugTracing()),
     [provideAnimations(), withViewTransitions()],
     provideHttpClient(withFetch()),
     { provide: Api },
